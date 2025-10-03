@@ -33,7 +33,10 @@ pip install -r requirements.txt   #install independency
 ## SECTORAL ANALYSIS (Decide which market, sector, or stock universe you’re covering)
 DATA FROM:
 Financial statements: Income statement, balance sheet, cash flow (from company filings).
-Indonesia → IDX website for annual/quarterly reports.
+IDX Monthly / Daily Statistics Report
+RTI Business app / website
+TradingView / Investing.com → you can filter IDX sectors and get average valuation multiples.
+Yahoo Finance (Indonesia tickers) → for individual company data → then you aggregate yourself.
 Global → SEC EDGAR (10-K, 10-Q), company websites.
 Sector reports: Bloomberg, Reuters, Fitch, S&P, local banks’ research.
 Economic indicators: Inflation, interest rates, GDP growth affecting sectors.
@@ -74,3 +77,10 @@ Global: Yahoo Finance, Bloomberg, Reuters, Morningstar
 Broker research, sell-side reports → provide comparable multiples, growth assumptions, risk rates
 
 ## SUMMARY (Executive summary -> macro → sector → stock analysis → valuation → recommendation)
+
+----------------------------------------------------------------------------------------------
+
+IDX: Highest Accuracy
+yfinance: Moderate Accuracy
+TradingView: Moderate Accuracy
+googlefinance: Moderate Accuracy
