@@ -10,16 +10,12 @@ git remote add origin URL #*
 git push -u origin master
 git pull origin master
 git log
-
 git config --global user.name "NAME"
 git config --global user.email "EMAIL"
-
 git checkout -b NEWBRANCH   #create branch
 git checkout BRANCH
 git merge NEWBRANCH
 git branch -d NEWBRANCH   #delete branch
-
-
 
 python -m venv my_env              #create venv
 my_env\Scripts\activate            #activate venv
@@ -80,7 +76,9 @@ Broker research, sell-side reports → provide comparable multiples, growth assu
 
 ----------------------------------------------------------------------------------------------
 
-IDX: Highest Accuracy
-yfinance: Moderate Accuracy
-TradingView: Moderate Accuracy
-googlefinance: Moderate Accuracy
+BI: BEST, semiautomatic scraping
+IDX: BEST, manual scraping
+yfinance: import yfinance
+TradingView: import tradingview_ta
+googlefinance: discontinued API call
+

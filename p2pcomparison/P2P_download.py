@@ -1,0 +1,193 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
+import time
+import os
+
+def download_idx_financial_report(company_code, download_path='./downloads'):
+    """
+    Download financial report from IDX website
+    
+    Args:
+        company_code: Stock code (e.g., 'BBCA', 'ASII')
+        download_path: Path where files will be downloaded
+    """
+    
+    # Create download directory if it doesn't exist
+    if not os.path.exists(download_path):
+        os.makedirs(download_path)
+    
+    # Configure Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    
+    # Set download preferences
+    prefs = {
+        "download.default_directory": os.path.abspath(download_path),
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True
+    }
+    chrome_options.add_experimental_option("prefs", prefs)
+    
+    # Initialize the driver
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.maximize_window()
+    
+    try:
+        print(f"Processing company code: {company_code}")
+        
+        # Step 1: Navigate directly to company profile page
+        url = f"https://www.idx.co.id/id/perusahaan-tercatat/profil-perusahaan-tercatat/{company_code}"
+        print(f"1. Navigating directly to {url}")
+        driver.get(url)
+        time.sleep(4)
+        
+        # Step 2: Click "Laporan Keuangan" tab/section
+        print("2. Clicking 'Laporan Keuangan' tab...")
+        laporan_keuangan = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Laporan Keuangan')]"))
+        )
+        laporan_keuangan.click()
+        time.sleep(3)
+        
+        # Step 3: Click year dropdown and select 2024
+        print("3. Selecting year 2024 from dropdown...")
+        
+        # Try to find the year dropdown by various methods
+        year_dropdown = None
+        dropdown_selectors = [
+            (By.ID, "selectYear"),
+            (By.ID, "year"),
+            (By.XPATH, "//select[contains(@class, 'year')]"),
+            (By.XPATH, "//select[option[contains(text(), '2024')]]"),
+            (By.CSS_SELECTOR, "select[name*='year']"),
+        ]
+        
+        for method, selector in dropdown_selectors:
+            try:
+                year_dropdown = driver.find_element(method, selector)
+                if year_dropdown:
+                    print(f"   Found year dropdown with: {method} = {selector}")
+                    break
+            except:
+                continue
+        
+        if year_dropdown:
+            # Use Select class to choose 2024
+            select = Select(year_dropdown)
+            select.select_by_value("2024")
+            time.sleep(2)
+            print("   ✓ Selected 2024")
+        else:
+            print("   Warning: Year dropdown not found, trying to continue anyway...")
+        
+        # Step 4: Download the XLSX file
+        print("4. Looking for XLSX download link...")
+        
+        # Scroll down to see all download options
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)
+        
+        # Look for the specific XLSX file pattern
+        xlsx_selectors = [
+            f"//a[contains(@href, 'FinancialStatement-2024-Tahunan-{company_code}.xlsx')]",
+            f"//a[contains(@href, '{company_code}.xlsx') and contains(@href, '2024')]",
+            "//a[contains(@href, '.xlsx') and contains(@href, '2024')]",
+            "//a[contains(text(), 'XLSX')]",
+            "//a[contains(@download, '.xlsx')]",
+        ]
+        
+        xlsx_link = None
+        for selector in xlsx_selectors:
+            try:
+                xlsx_link = driver.find_element(By.XPATH, selector)
+                if xlsx_link:
+                    print(f"   ✓ Found XLSX link")
+                    break
+            except:
+                continue
+        
+        if xlsx_link:
+            # Scroll to the link and click
+            driver.execute_script("arguments[0].scrollIntoView(true);", xlsx_link)
+            time.sleep(1)
+            xlsx_link.click()
+            print(f"✓ Download initiated for {company_code}")
+            print(f"   File: FinancialStatement-2024-Tahunan-{company_code}.xlsx")
+            time.sleep(5)
+        else:
+            print(f"   Warning: XLSX download link not found")
+            print("\n   Available links on page:")
+            all_links = driver.find_elements(By.TAG_NAME, "a")
+            for link in all_links:
+                href = link.get_attribute("href")
+                text = link.text
+                if href and ('.xlsx' in href or '.xls' in href or 'download' in href.lower()):
+                    print(f"      - {text}: {href}")
+            
+            driver.save_screenshot(f"debug_download_{company_code}.png")
+        
+        print(f"\n{'='*60}")
+        print(f"✓ Process completed for {company_code}")
+        print(f"Files saved to: {os.path.abspath(download_path)}")
+        
+    except Exception as e:
+        print(f"\n{'='*60}")
+        print(f"ERROR processing {company_code}: {str(e)}")
+        driver.save_screenshot(f"error_{company_code}.png")
+        print(f"Screenshot saved as: error_{company_code}.png")
+        import traceback
+        traceback.print_exc()
+        
+    finally:
+        print("\nClosing browser in 5 seconds...")
+        time.sleep(5)
+        driver.quit()
+
+def download_multiple_reports(company_codes, download_path='./downloads'):
+    """
+    Download financial reports for multiple companies
+    
+    Args:
+        company_codes: List of stock codes
+        download_path: Path where files will be downloaded
+    """
+    print(f"\n{'='*60}")
+    print(f"Starting batch download for {len(company_codes)} companies")
+    print(f"{'='*60}\n")
+    
+    for i, code in enumerate(company_codes, 1):
+        print(f"\n[{i}/{len(company_codes)}] Processing {code}...")
+        download_idx_financial_report(code, download_path)
+        
+        if i < len(company_codes):
+            print(f"\nWaiting 3 seconds before next download...")
+            time.sleep(3)
+    
+    print(f"\n{'='*60}")
+    print(f"✓ Batch download completed!")
+    print(f"Total companies processed: {len(company_codes)}")
+    print(f"{'='*60}")
+
+def main():
+    print("="*60)
+    print("IDX Financial Report Downloader")
+    print("="*60)
+    
+    choice = input("\nDownload for:\n1. Single company\n2. Multiple companies\nChoice (1/2): ")
+    
+    if choice == "1":
+        company_code = input("Enter company code (e.g., BBCA, ASII): ").upper()
+        download_idx_financial_report(company_code)
+    elif choice == "2":
+        codes_input = input("Enter company codes separated by comma (e.g., BBCA,ASII,TLKM): ")
+        company_codes = [code.strip().upper() for code in codes_input.split(",")]
+        download_multiple_reports(company_codes)
+    else:
+        print("Invalid choice!")
+
+if __name__ == "__main__":
+    main()
