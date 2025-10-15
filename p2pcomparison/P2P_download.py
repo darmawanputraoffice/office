@@ -7,8 +7,7 @@ from selenium.webdriver.support.ui import Select
 import time
 import os
 
-def download_idx_financial_report(company_code='BBCA', download_path='./downloads'):
-
+def download_idx_financial_report(company_code='BBCA', year='2024', download_path='./downloads'):
     # Create download directory if it doesn't exist
     if not os.path.exists(download_path):
         os.makedirs(download_path)
@@ -27,164 +26,111 @@ def download_idx_financial_report(company_code='BBCA', download_path='./download
     
     try:
         print(f"Processing company code: {company_code}")
-        
-        # Step 1: Navigate directly to company profile page
-        url = f"https://www.idx.co.id/id/perusahaan-tercatat/profil-perusahaan-tercatat/{company_code}"
-        print(f"1. Navigating directly to {url}")
-        driver.get(url)
-        time.sleep(1)
-        
-        # Step 2: Click "Laporan Keuangan" tab/section
-        print("2. Clicking 'Laporan Keuangan' tab...")
-        laporan_keuangan = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((
-                By.XPATH,
-                "//button[contains(., 'Laporan Keuangan')]"
-            ))
-        )
-        driver.execute_script("arguments[0].scrollIntoView(true);", laporan_keuangan)
-        time.sleep(1)
-        driver.execute_script("arguments[0].click();", laporan_keuangan)
-        time.sleep(1)
 
-        print("3. Selecting year 2024 from dropdown...")
+        # 1. Navigate to the company's profile page
         try:
-            # Wait for the dropdowns to be visible (there are 2: period type and year)
-            # The year dropdown is the second one (right side)
-            dropdowns = WebDriverWait(driver, 20).until(
-                EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'select') or @role='combobox']"))
+            url = f"https://www.idx.co.id/id/perusahaan-tercatat/profil-perusahaan-tercatat/{company_code}"
+            driver.get(url)
+            time.sleep(1)
+        except:
+            print("Failed to load company profile page")
+        
+        # 2. Clicking 'Laporan Keuangan' tab
+        try:
+            laporan_keuangan = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[contains(., 'Laporan Keuangan')]"
+                ))
             )
-            
-            # Find the year dropdown (should be the one showing "2025" or a year)
+            driver.execute_script("arguments[0].scrollIntoView(true);", laporan_keuangan)
+            driver.execute_script("arguments[0].click();", laporan_keuangan)
+            time.sleep(1)
+        except:
+            print("Warning: Failed to click 'Laporan Keuangan' tab")
+
+        # 3. Selecting year from dropdown
+        try:
+            comboboxes = WebDriverWait(driver, 20).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//div[@role='combobox']"))
+            )
             year_dropdown = None
-            for dropdown in dropdowns:
-                text = dropdown.text
-                if text and any(year in text for year in ['2025', '2024', '2023', '2022']):
-                    year_dropdown = dropdown
-                    print(f"   Found year dropdown showing: {text}")
-                    break
-            
-            # If we can't find by year text, try the second dropdown
-            if not year_dropdown and len(dropdowns) >= 2:
-                year_dropdown = dropdowns[1]
-                print(f"   Using second dropdown as year selector")
-            
-            if year_dropdown:
-                # Scroll into view and click the dropdown
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", year_dropdown)
-                time.sleep(1)
-                driver.execute_script("arguments[0].click();", year_dropdown)
-                time.sleep(1)
+            for idx, combobox in enumerate(comboboxes):
+                try:
+                    selected_text = combobox.find_element(By.CLASS_NAME, "vs__selected").text
+                    if selected_text.isdigit() and len(selected_text) == 4:
+                        year_dropdown = combobox
+                        break
+                except:
+                    continue
                 
-                # Wait for dropdown options to appear and click 2024
-                year_option = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((
-                        By.XPATH, 
-                        "//*[contains(@class, 'option') or contains(@class, 'item') or @role='option'][contains(text(), '2024')]"
-                    ))
-                )
-                driver.execute_script("arguments[0].click();", year_option)
-                print("   ✓ Selected 2024")
-                time.sleep(2)
+            if year_dropdown:
+                # Try typing in the input field
+                try:
+                    input_field = year_dropdown.find_element(By.TAG_NAME, "input")
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_field)
+                    input_field.click()
+                    input_field.clear()
+                    time.sleep(0.5)
+                    input_field.send_keys(year)
+                    time.sleep(1)
+                    
+                    from selenium.webdriver.common.keys import Keys
+                    input_field.send_keys(Keys.ENTER)
+                    time.sleep(1)
+                        
+                except Exception as e:
+                    print(f"Warning: Failed to select the year input")
             else:
-                print("   ⚠ Warning: Could not find year dropdown")
-                driver.save_screenshot(f"debug_year_{company_code}.png")
+                print("Warning: Could not find year dropdown")
             
         except Exception as e:
-            print(f"   ✗ Error selecting year: {e}")
-            driver.save_screenshot(f"debug_year_{company_code}.png")
-            print("   Continuing with default year...")
+            print(f"Warning: Failed to select the year input")
+            import traceback
+            traceback.print_exc()
         
-        # Step 4: Download the XLSX file
-        print("4. Looking for XLSX download link...")
-        
-        # Scroll down to see all download options
+        # 4. Looking for XLSX download link
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
-        
-        # Look for the specific XLSX file pattern
+        time.sleep(1)
         xlsx_selectors = [
-            f"//a[contains(@href, 'FinancialStatement-2024-Tahunan-{company_code}.xlsx')]",
-            f"//a[contains(@href, '{company_code}.xlsx') and contains(@href, '2024')]",
-            "//a[contains(@href, '.xlsx') and contains(@href, '2024')]",
+            f"//a[contains(@href, 'FinancialStatement-{year}-Tahunan-{company_code}.xlsx')]",
+            f"//a[contains(@href, '{company_code}.xlsx') and contains(@href, '{year}')]",
+            f"//a[contains(@href, '.xlsx') and contains(@href, '{year}')]",
             "//a[contains(text(), 'XLSX') or contains(text(), 'xlsx')]",
             "//a[contains(@download, '.xlsx')]",
             "//button[contains(text(), 'XLSX')]",
             "//*[contains(@href, '.xlsx')]",
         ]
-        
         xlsx_link = None
         for selector in xlsx_selectors:
             try:
                 xlsx_link = driver.find_element(By.XPATH, selector)
                 if xlsx_link:
-                    print(f"   ✓ Found XLSX link using selector")
                     break
             except:
                 continue
         
         if xlsx_link:
-            # Scroll to the link and click
             driver.execute_script("arguments[0].scrollIntoView(true);", xlsx_link)
-            time.sleep(1)
+            time.sleep(0.5)
             driver.execute_script("arguments[0].click();", xlsx_link)
-            print(f"✓ Download initiated for {company_code}")
-            print(f"   File: FinancialStatement-2024-Tahunan-{company_code}.xlsx")
-            time.sleep(5)
+            time.sleep(1)
         else:
-            print(f"   ⚠ Warning: XLSX download link not found")
-            print("\n   Available links on page:")
-            all_links = driver.find_elements(By.TAG_NAME, "a")
-            xlsx_count = 0
-            for link in all_links:
-                href = link.get_attribute("href")
-                text = link.text
-                if href and ('.xlsx' in href or '.xls' in href or 'download' in href.lower()):
-                    print(f"      - {text}: {href}")
-                    xlsx_count += 1
-            
-            if xlsx_count == 0:
-                print("      - No XLSX links found")
-            
-            driver.save_screenshot(f"debug_download_{company_code}.png")
-        
-        print(f"\n{'='*60}")
-        print(f"✓ Process completed for {company_code}")
-        print(f"Files saved to: {os.path.abspath(download_path)}")
+            print("Warning: XLSX download link not found")
         
     except Exception as e:
-        print(f"\n{'='*60}")
         print(f"ERROR processing {company_code}: {str(e)}")
-        driver.save_screenshot(f"error_{company_code}.png")
-        print(f"Screenshot saved as: error_{company_code}.png")
         import traceback
         traceback.print_exc()
         
     finally:
-        print("\nClosing browser in 5 seconds...")
         time.sleep(5)
         driver.quit()
 
-def download_multiple_reports(company_codes, download_path='./downloads'):
-    print(f"\n{'='*60}")
-    print(f"Starting batch download for {len(company_codes)} companies")
-    print(f"{'='*60}\n")
-    
-    for i, code in enumerate(company_codes, 1):
-        print(f"\n[{i}/{len(company_codes)}] Processing {code}...")
-        download_idx_financial_report(code, download_path)
-        
-        if i < len(company_codes):
-            print(f"\nWaiting 3 seconds before next download...")
-            time.sleep(3)
-    
-    print(f"\n{'='*60}")
-    print(f"✓ Batch download completed!")
-    print(f"Total companies processed: {len(company_codes)}")
-    print(f"{'='*60}")
-
 def main():
-    download_idx_financial_report()
+    for company_code in ['BBCA', 'TLKM', 'UNVR']:
+        for year in ['2024', '2023', '2022']:
+            download_idx_financial_report(company_code=company_code, year=year)
 
 if __name__ == "__main__":
     main()
