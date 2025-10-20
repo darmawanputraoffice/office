@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import Select
 import time
 import os
 
-def download_idx_financial_report(company_code='BBCA', year='2024', download_path='./downloads'):
+def download_idx_financial_report(company_code, year, download_path='./downloads'):
     # Create download directory if it doesn't exist
     if not os.path.exists(download_path):
         os.makedirs(download_path)
