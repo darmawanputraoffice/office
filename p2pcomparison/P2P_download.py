@@ -128,8 +128,8 @@ def download_idx_financial_report(company_code, year, download_path='./downloads
         driver.quit()
 
 def main():
-    for company_code in ['BBCA', 'TLKM', 'UNVR']:
-        for year in ['2024', '2023', '2022']:
+    for company_code in ['MEDC']:
+        for year in range(2025,2015,-1):
             download_idx_financial_report(company_code=company_code, year=year)
 
 if __name__ == "__main__":
