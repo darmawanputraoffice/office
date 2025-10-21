@@ -1,4 +1,6 @@
 .env
-*.xlsx
+
+*.pdf
 *.png
 *.pyc
+*.xlsx
