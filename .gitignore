@@ -1,5 +1,7 @@
 .env
 
+*.csv
+*.json
 *.pdf
 *.png
 *.pyc
