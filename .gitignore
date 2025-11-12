@@ -1,4 +1,12 @@
 .env
+__pycache/
+
+*.aux
+*.fdb
+*.fls
+*.log
+*.gz
+*.toc
 
 *.csv
 *.json
