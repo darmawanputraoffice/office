@@ -1,0 +1,105 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{ragged2e}
+\usepackage{graphicx}
+\usepackage{float}
+
+\title{\bf{Profindo Trading Limit untuk Margin}}
+\author{Darmawan Putra Wijaya}
+\date{\today}
+
+\begin{document}
+    \justifying
+    \setlength{\parindent}{0pt}
+    \maketitle
+    \tableofcontents
+    \bigskip
+
+\section{Rumusan Masalah}
+Sebelum nasabah melakukan transaksi short-selling pada akun margin,
+Profindo perlu memastikan bahwa nasabah memiliki trading limit yang memadai.
+Rumus trading limit yang digunakan Profindo adalah
+\begin{equation}
+    \text{Trading Limit}=2.85\times\text{Cash}+1.85\times\text{Total Collateral}.
+\end{equation}
+dengan kolateral dihitung berdasarkan
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline Kelas & Haircut & Capping \\ \hline
+        A & 0-25\% & 12.5B \\ \hline
+        B & 30-45\% & 6.5B \\ \hline
+        C & 50-65\% & 2B \\ \hline
+        D & 70-75\% & 2B \\ \hline
+        E & 80-85\% & 2B \\ \hline
+        F & 90-100\% & 0 \\ \hline
+    \end{tabular}
+\end{table}
+Meskipun demikian, sistem Profindo (termasuk aplikasi Proclick) menggunakan parameter untuk menghitung trading limit sebagai berikut
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{parametersistemprofindo.png}
+\end{figure}
+Makna dari setiap parameter tidak diketahui dan 
+diragukan terdapat perbedaan cara perhitungan trading limit dengan yang dikehendaki Profindo.
+\\ \\
+Pada Februari 2025, nilai Haircut KPEI saham ADMR naik menjadi 
+\begin{equation}
+    \text{Haircut KPEI}>65\%.
+\end{equation}
+Akibatnya, saham ADMR masuk ke dalam kelas saham D/E/F dan nilai kolateralnya diabaikan dalam perhitungan trading limit.
+\\ \\
+Atas komplain dari nasabah dengan argumen bahwa ADMR termasuk ke dalam indeks LQ45, 
+maka Profindo menetapkan kebijakan bahwa Haircut Profindo saham ADMR ditetapkan menjadi 
+\begin{equation}
+    \text{Haircut Profindo}=65\%.
+\end{equation}
+Hal ini dapat menyebabkan Profindo perlu menanggung risiko yang lebih besar.
+\\ \\
+Maka akan diselidiki hal-hal berikut:
+\begin{enumerate}
+    \item Bagaimana cara sistem Profindo menghitung trading limit?
+    \item Bagaimana interpretasi masing-masing parameter dalam sistem Profindo?
+\end{enumerate}
+\pagebreak
+
+\section{Hipotesis}
+Terdapat dugaan berdasarkan perbincangan dengan tim Risk Management dan IT bahwa sistem Profindo menghitung trading limit dengan menggunakan rumus
+\begin{equation}
+    TL_X=EBR_X\times(MC_X\times\text{Cash}+1.85\times\sum_{k=1}^{n}{\min(\text{Lot}_k\times100\times\text{Price}_k\times(1-\text{Haircut}_k),\text{Capping}_k)})
+\end{equation}
+dengan
+\begin{align*}
+    TL&=\text{Trading Limit}\\
+    \text{Cash}&=\text{Jumlah kas pada portofolio}\\
+    \text{Total Collateral}&=\text{Jumlah kolateral dengan jaminan saham pada portofolio}\\
+    n&=\text{Jumlah kode saham berbeda pada portofolio}\\
+    \text{Collateral}_k&=\text{Nilai pasar saham ke-k setelah dipotong haircut pada portofilio}\\
+    \text{MVAHC}_k&=\text{Nilai pasar saham ke-k setelah dipotong haircut pada portofilio}\\
+    \text{Capping}_k&=\text{Nilai capping saham ke-k pada portofolio}\\
+    \text{MV}_k&=\text{Nilai pasar saham ke-k pada portofolio}\\
+    \text{Lot}_k&=\text{Jumlah lot saham ke-k pada portofolio}\\
+    \text{Haircut}_k&=\text{Nilai haircut Profindo untuk saham ke-k pada portofolio}
+\end{align*}\
+
+\section{Metodologi}
+Akan dibuat puluhan hingga ratusan portofolio pada sistem Profindo dengan akun demo,
+kemudian segala input dan output yang diterima dan dihasilkan sistem akan dicatat.
+Proses pembuatan portofolio akan dibagi kedalam dua tahap
+\begin{enumerate}
+    \item Portofilio terdiri dari cash dan satu saham\\
+    Tahap ini bertujuan untuk memastikan bahwa proses pemberlakuan Haircut, Capping, dan Multiplier 
+    sesuai dengan yang terdapat pada hipotesis.
+    \item Portofolio terdiri dari cash dan beberapa saham\\
+    Tahap ini bertujuan untuk memastikan bahwa tidak ada variabel tambahan maupun variabel pengganggu lain.
+\end{enumerate}
+\pagebreak
+
+\section{Hasil}
+
+\pagebreak
+
+\section{Kesimpulan}
+\pagebreak
+
+\end{document}
