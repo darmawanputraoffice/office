@@ -1,0 +1,1 @@
+Error: Image file 'sample_porto.png' not found.
