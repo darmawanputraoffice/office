@@ -16,7 +16,7 @@
     \bigskip
 
 \section{Rumusan Masalah}
-Sebelum nasabah melakukan transaksi short-selling pada akun margin,
+Sebelum nasabah melakukan transaksi margin,
 Profindo perlu memastikan bahwa nasabah memiliki trading limit yang memadai.
 Rumus trading limit yang digunakan Profindo adalah
 \begin{equation}
@@ -35,19 +35,19 @@ dengan kolateral dihitung berdasarkan
         F & 90-100\% & 0 \\ \hline
     \end{tabular}
 \end{table}
-Meskipun demikian, sistem Profindo (termasuk aplikasi Proclick) menggunakan parameter untuk menghitung trading limit sebagai berikut
+Meskipun demikian, sistem Profindo menggunakan parameter untuk menghitung trading limit sebagai berikut
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{parametersistemprofindo.png}
 \end{figure}
-Makna dari setiap parameter tidak diketahui dan 
+Makna dari setiap parameter tidak diketahui dan
 diragukan terdapat perbedaan cara perhitungan trading limit dengan yang dikehendaki Profindo.
 \\ \\
 Pada Februari 2025, nilai Haircut KPEI saham ADMR naik menjadi 
 \begin{equation}
     \text{Haircut KPEI}>65\%.
 \end{equation}
-Akibatnya, saham ADMR masuk ke dalam kelas saham D/E/F dan nilai kolateralnya diabaikan dalam perhitungan trading limit.
+Akibatnya, saham ADMR masuk ke dalam kelas saham D/E/F dan tidak bisa diperjualbelikan nasabah.
 \\ \\
 Atas komplain dari nasabah dengan argumen bahwa ADMR termasuk ke dalam indeks LQ45, 
 maka Profindo menetapkan kebijakan bahwa Haircut Profindo saham ADMR ditetapkan menjadi 
@@ -66,7 +66,7 @@ Maka akan diselidiki hal-hal berikut:
 \section{Hipotesis}
 Terdapat dugaan berdasarkan perbincangan dengan tim Risk Management dan IT bahwa sistem Profindo menghitung trading limit dengan menggunakan rumus
 \begin{equation}
-    TL_X=EBR_X\times(MC_X\times\text{Cash}+1.85\times\sum_{k=1}^{n}{\min(\text{Lot}_k\times100\times\text{Price}_k\times(1-\text{Haircut}_k),\text{Capping}_k)})
+    TL_X=MC_X\times\text{Cash}+EBR_X\times\sum_{k=1}^{n}{\left(MS_k\times\min(\text{Lot}_k\times100\times\text{Price}_k\times(1-\text{Haircut}_k),\text{Capping}_k)\right)}
 \end{equation}
 dengan
 \begin{align*}
