@@ -56,19 +56,7 @@ portofolios = {
             "BBCA": 250984964912,
         },
     },
-#    "case6": { # WEIRD CAUSE LIMIT IS SOMEHOW USED
-#        "input": {
-#            "CASHT2": 84332478464,
-#            "BBCA": {
-#                "lot": 25948,
-#                "price": 2040,
-#            },
-#        },
-#        "output": {
-#            "BBCA": 246784080707,
-#        },
-#    },
-    "case7": {
+    "case6": {
         "input": {
             "CASHT2": 77368500224,
             "BBCA": {
@@ -80,7 +68,7 @@ portofolios = {
             "BBCA": 242012024732,
         }
     },
-    "case8": {
+    "case7": {
         "input": {
             "CASHT2": 73278300160,
             "BBCA": {
@@ -92,30 +80,91 @@ portofolios = {
             "BBCA": 230811904726,
         }
     },
+    "case8": {
+        "input": {
+            "CASHT2": 89949872128,
+            "ACES": {
+                "lot": 10000,
+                "price": 50,
+            },
+        },
+        "output": {
+            "BBCA": 256431143753,
+            "BREN": 0,
+        }
+    },
+    "case9": {
+        "input": {
+            "CASHT2": 86987489280,
+            "ACES": {
+                "lot": 10000,
+                "price": 50,
+            },
+            "ADMR": {
+                "lot": 30000,
+                "price": 985,
+            },
+        },
+        "output": {
+            "BBCA": 249901702008,
+            "BREN": 0,
+        }
+    },
+    "case10": {
+        "input": {
+            "CASHT2": 66535493632,
+            "ACES": {
+                "lot": 10000,
+                "price": 50,
+            },
+            "ADMR": {
+                "lot": 30000,
+                "price": 985,
+            },
+            "ASII": {
+                "lot": 40199,
+                "price": 5075,
+            },
+        },
+        "output": {
+            "BBCA": 213582266039,
+            "BREN": 0,
+        }
+    },
 }
 '''
     "case": {
         "input": {
-            "CASHT2": 0,
+            "CASHT2": ,
             "BBCA": {
-                "lot": 0,
-                "price": 0,
+                "lot": ,
+                "price": ,
             },
         },
         "output": {
-            "BBCA": 0,
+            "BBCA": ,
+            "BREN": ,
         }
     },
 '''
 
+incorrect = 0
+correct = 0
+
 for casenumber, portofolio in portofolios.items():
     for stock_buy, output_value in portofolio["output"].items():
+        predict = tl.tradinglimit(account = "FREE", stock_buy = stock_buy, portofolio = portofolio["input"])
+        delta = predict - portofolio["output"][stock_buy]
         print("input: " + casenumber + " on " + stock_buy + \
-            "\n output: " + str(tl.tradinglimit(account = "FREE", stock_buy = stock_buy, portofolio = portofolio["input"])) + \
-            "\n output: " + str(portofolio["output"][stock_buy]))
+            "\n output: " + str(predict) + \
+            "\n output: " + str(portofolio["output"][stock_buy]) + \
+            "\n delta : " + str(predict - portofolio["output"][stock_buy]))
+        if abs(delta) > 10000:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            incorrect += 1
+        else:
+            print("ok")
+            correct += 1
 
-'''
-Finding
-1) Capping BBCA di 11,875,000,000
-2)
-'''
+print("\n TOTAL X:" + str(incorrect) + \
+    "\n TOTAL V:" + str(correct))

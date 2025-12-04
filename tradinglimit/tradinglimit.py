@@ -4,7 +4,7 @@ import pandas as pd
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-DATAHAIRCUT = pd.read_excel("tradinglimitdata.xlsx", sheet_name="Haircut")
+DATAHAIRCUT = pd.read_excel(".ignore/tradinglimitdata.xlsx", sheet_name="Haircut")
 
 CLASS = {
     "A": [0, 25],
@@ -161,7 +161,7 @@ def gethaircut(stock_code):
 def getclass(stock_code):
     haircut = gethaircut(stock_code)
     for label, [low, high] in CLASS.items():
-        if low <= haircut <= high:
+        if low / 100 <= haircut <= high / 100:
             return label
 
 def tradinglimit(account="FREE", stock_buy="BBCA", portofolio=""):
@@ -170,11 +170,10 @@ def tradinglimit(account="FREE", stock_buy="BBCA", portofolio=""):
     for stock_code, stock_info in portofolio.items():
         if stock_code=="CASHT2":
             tl += HYPARAM[account]["MULTIPLIERCASH"][stock_class] * portofolio["CASHT2"]
-            
         else:
             temp_class = getclass(stock_code)
             tl += HYPARAM[account]["MULTIPLIERSTOCK"][temp_class] * \
-                (1 - gethaircut(stock_code)) * min(stock_info["lot"] * 100 * stock_info["price"], \
+                min(stock_info["lot"] * 100 * stock_info["price"] * (1 - gethaircut(stock_code)), \
                 HYPARAM[account]["CAPPING"][temp_class] * 1000000000)
     tl *= HYPARAM[account]["EFFECTIVEBUYRATE"][stock_class]
     return tl

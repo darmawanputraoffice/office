@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1762846198.76657 "c:/MyGit/office/tradinglimit/tradinglimit_report/tradinglimit.tex" "tradinglimit.pdf" "tradinglimit" 1762846199.4694 0
+["pdflatex"] 1764830202.77974 "c:/MyGit/office/tradinglimit/tradinglimit_report/tradinglimit.tex" "tradinglimit.pdf" "tradinglimit" 1764830203.58143 0
   "C:/Users/Darma/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1762753606 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/Darma/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1762611210 13234938 8ea5899cd9019c05b96b511518b629b2 ""
   "C:/Users/Darma/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
@@ -55,11 +55,11 @@
   "C:/Users/Darma/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty" 1749322634 4023 e66acf578d6b564c4670fb57ff336a7a ""
   "C:/Users/Darma/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1745818159 30366 13daaaa774357bc2a262523ba6a04bac ""
   "C:/Users/Darma/AppData/Local/Programs/MiKTeX/tex/latex/ragged2e/ragged2e.sty" 1687525147 10085 3dececaeed388e31285c366e124c0c4e ""
-  "c:/MyGit/office/tradinglimit/tradinglimit_report/tradinglimit.tex" 1762846197 4232 913b7c923635e155628b2ac29a03d3aa ""
+  "c:/MyGit/office/tradinglimit/tradinglimit_report/tradinglimit.tex" 1764830201 4164 2cca1b9624a9af1b3ba1c84c396d493b ""
   "parametersistemprofindo.png" 1762753205 92333 7786b1f11ee41ca928e3b04d68eae257 ""
-  "tradinglimit.aux" 1762846199 521 8a26cded3c16ac6360d4e75b92ec6d10 "pdflatex"
-  "tradinglimit.tex" 1762846197 4232 913b7c923635e155628b2ac29a03d3aa ""
-  "tradinglimit.toc" 1762846199 284 9b08cf03cf9b34558cdf84f40529daf1 "pdflatex"
+  "tradinglimit.aux" 1764830203 521 8a26cded3c16ac6360d4e75b92ec6d10 "pdflatex"
+  "tradinglimit.tex" 1764830201 4164 2cca1b9624a9af1b3ba1c84c396d493b ""
+  "tradinglimit.toc" 1764830203 284 9b08cf03cf9b34558cdf84f40529daf1 "pdflatex"
   (generated)
   "tradinglimit.aux"
   "tradinglimit.log"

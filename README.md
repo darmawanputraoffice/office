@@ -82,3 +82,4 @@ yfinance: import yfinance
 TradingView: import tradingview_ta
 googlefinance: discontinued API call
 
+AVIA
